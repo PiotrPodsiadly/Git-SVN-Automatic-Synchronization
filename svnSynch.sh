@@ -21,7 +21,15 @@
 # git-svn fetch
 # git merge -s recursive -X ours git-svn
 # git-svn dcommit --username=piotrp
-# or in worst case git reset --hard somehwereBeforeProblemsStarted, then git-svn rebase
+# or in worst case git reset --hard somehwereBeforeProblemsStarted, 
+# then git-svn rebase, then git-clone on each client
+#
+# I noticed that it is totally safe to keep no branches and whenever you have one, 
+# just remove it with git reset --hard pointBeforeBranchingBeggins
+# To avoid having branches never do git pull. Do git fetch instead
+#
+# When you see "master -> origin/master (forced update) just run
+# git reset --hard origin/master and you will catch up with what has been rebased with svn-rebase
 #
 # This SVN-synchronizing-repo need to be always on master branch.
 # If it is doing merges it will block incoming pushes
