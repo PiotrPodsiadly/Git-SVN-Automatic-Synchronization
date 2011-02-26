@@ -28,7 +28,7 @@ svnChanges=`git log --pretty="%h" master..git-svn`
 gitChanges=`git log --pretty="%h" git-svn..master`
 
 if [ -n "$svnChanges" -o -n "$gitChanges" ] ; then
-  echo "`date +"%F %k:%m:%S"` Synchronization started"
+  echo "`date +"%F %k:%M:%S"` Synchronization started"
   # Dont accept pushes for a while
   git config receive.denyCurrentBranch "refuse"
   # Wait for any pending pushes to finish
@@ -44,7 +44,7 @@ if [ -n "$svnChanges" -o -n "$gitChanges" ] ; then
   fi
   # Continue accepting pushes
   git config receive.denyCurrentBranch "ignore"
-  echo "`date +"%F %k:%m:%S"` Synchronization ended"
+  echo "`date +"%F %k:%M:%S"` Synchronization ended"
 else
-  echo "`date +"%F %k:%m:%S"` Nothing to synchronize"
+  echo "`date +"%F %k:%M:%S"` Nothing to synchronize"
 fi
