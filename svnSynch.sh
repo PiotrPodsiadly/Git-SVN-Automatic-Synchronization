@@ -25,9 +25,6 @@ authorsfile=/opt/portal/git/users.txt
 #
 
 # git config receive.denyCurrentBranch "refuse"
-# This SVN-synchronizing-repo need to be always on synch branch, 
-# so that master is available for taking pushes
-git checkout synch
 
 # Fetch most recent SVN changes first
 git-svn fetch
@@ -35,10 +32,10 @@ git-svn fetch
 git merge --ff-only git-svn
 
 # Required on non bare repositories that allows pushing changes
-# (not needed as used synch branch) git reset --hard
+git reset --hard
 
 # Put git changes on top of SVN recent changes
-# (not needed as used synch branch) git-svn rebase
+# git-svn rebase
 
 # For each commit that is locally and not yet in SVN
 for line in `git log --pretty="%H_%ae" --reverse git-svn..master`
@@ -57,9 +54,5 @@ do
   user="`grep -i "$email" $authorsfile|cut -d= -f1`"
   git-svn dcommit --username=$user
 done
-
-git checkout master
-
-git checkout synch
 
 git config receive.denyCurrentBranch "ignore"
