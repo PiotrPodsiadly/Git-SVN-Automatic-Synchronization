@@ -25,7 +25,7 @@
 git-svn fetch
 
 svnChanges=`git log --pretty="%h" master..git-svn`
-gitChanges=`git log --pretty="%h" --reverse git-svn..master`
+gitChanges=`git log --pretty="%h" git-svn..master`
 
 if [ -n $svnChanges -o -n  $gitChanges] ; then
   # Dont accept pushes for a while
