@@ -27,7 +27,8 @@ git-svn fetch
 svnChanges=`git log --pretty="%h" master..git-svn`
 gitChanges=`git log --pretty="%h" git-svn..master`
 
-if [ -n $svnChanges -o -n  $gitChanges] ; then
+if [ -n "$svnChanges" -o -n "$gitChanges" ] ; then
+  echo "`date +"%F %k:%m:%S"` Synchronization started"
   # Dont accept pushes for a while
   git config receive.denyCurrentBranch "refuse"
   # Wait for any pending pushes to finish
@@ -36,11 +37,14 @@ if [ -n $svnChanges -o -n  $gitChanges] ; then
   git reset --hard
   # Put git changes on top of SVN recent changes
   git-svn rebase
-  # Commit all Git changes to SVN with single user.
-  # ---> Ask Git commiters to put theit name in commit message
-  git-svn dcommit --username=piotrp
+  if [ -n "$gitChanges" ] ; then
+    # Commit all Git changes to SVN with single user.
+    # ---> Ask Git commiters to put theit name in commit message
+    git-svn dcommit --username=piotrp
+  fi
   # Continue accepting pushes
   git config receive.denyCurrentBranch "ignore"
+  echo "`date +"%F %k:%m:%S"` Synchronization ended"
 else
-  echo "Nothing to synchronize"
+  echo "`date +"%F %k:%m:%S"` Nothing to synchronize"
 fi
