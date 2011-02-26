@@ -23,36 +23,44 @@ authorsfile=/opt/portal/git/users.txt
 # it will feth all the SVN changes and dcommit all the git changes.
 # If conflicts occures ________________________________
 #
-
-# git config receive.denyCurrentBranch "refuse"
+# This SVN-synchronizing-repo need to be always on master branch.
+# If it is doing merges it will block incoming pushes
 
 # Fetch most recent SVN changes first
 git-svn fetch
-# Apply them to synch branch
-git merge --ff-only git-svn
 
-# Required on non bare repositories that allows pushing changes
-git reset --hard
+svnChanges=`git log --pretty="%h" master..git-svn`
+gitChanges=`git log --pretty="%H_%ae" --reverse git-svn..master`
 
-# Put git changes on top of SVN recent changes
-# git-svn rebase
+if [ -n $svnChanges -o -n  $gitChanges] ; then
+  # Dont accept pushes for a while
+  git config receive.denyCurrentBranch "refuse"
+  # Wait for any pending pushes to finish
+  sleep 30
+  # Required on non bare repositories that allows pushing changes
+  git reset --hard
+  if [ -n $svnChanges ] ; then
+    # Put git changes on top of SVN recent changes
+    git-svn rebase
+  fi
+  # For each commit that is locally and not yet in SVN
+  for line in $gitChanges ; do
+    hash=${line:0:40}
+    email=${line:41}
 
-# For each commit that is locally and not yet in SVN
-for line in `git log --pretty="%H_%ae" --reverse git-svn..master`
-do
-  hash=${line:0:40}
-  email=${line:41}  
-
-  # Mark given checkin as tmp branch
-  # git branch -d tmp
-  # git branch tmp $hash
-  git merge --ff-only $hash || {
-    message="`git log --pretty="%s" $hash^..$hash`"
-    # If fast forward fails try regular merge
-    git merge -m "[git] $message" -s resolve $hash
-  }
-  user="`grep -i "$email" $authorsfile|cut -d= -f1`"
-  git-svn dcommit --username=$user
-done
-
-git config receive.denyCurrentBranch "ignore"
+    # Mark given checkin as tmp branch
+    # git branch -d tmp
+    # git branch tmp $hash
+    git merge --ff-only $hash || {
+      message=`git log --pretty="%s" $hash^..$hash`
+      # If fast forward fails try regular merge
+      git merge -m "[git] $message" -s resolve $hash
+    }
+    user=`grep -i "$email" $authorsfile|cut -d= -f1`
+    git-svn dcommit --username=$user
+  done
+  # Continue accepting pushes
+  git config receive.denyCurrentBranch "ignore"
+else
+  echo "Nothing to synchronize"
+fi
