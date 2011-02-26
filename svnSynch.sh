@@ -16,7 +16,12 @@
 #
 # Now this script should be run every 5 minutes or so.
 # it will feth all the SVN changes and dcommit all the git changes.
-# If conflicts occures ________________________________
+# If conflicts occures script exits, the parent script should send email.
+# Someone will need to resolve them manually, probably with
+# git-svn fetch
+# git merge -s recursive -X ours git-svn
+# git-svn dcommit --username=piotrp
+# or in worst case git reset --hard somehwereBeforeProblemsStarted, then git-svn rebase
 #
 # This SVN-synchronizing-repo need to be always on master branch.
 # If it is doing merges it will block incoming pushes
@@ -36,7 +41,11 @@ if [ -n "$svnChanges" -o -n "$gitChanges" ] ; then
   # Required on non bare repositories that allows pushing changes
   git reset --hard
   # Put git changes on top of SVN recent changes
-  git-svn rebase
+  git-svn rebase || {
+    echo "standard rebase failed, aborting and retrying"
+    git rebase --abort
+    git-svn rebase -s ours
+  }
   if [ -n "$gitChanges" ] ; then
     # Commit all Git changes to SVN with single user.
     # ---> Ask Git commiters to put theit name in commit message
