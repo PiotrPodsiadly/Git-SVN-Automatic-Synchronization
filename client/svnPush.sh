@@ -6,7 +6,9 @@
 response=`git push 2>&1`
 if [[ "$response" == *rejected* ]] ; then
   if [[ "$response" == *non-fast-forward* ]] ; then
-    echo "Origin has more recent sources, please svnPull.sh first"    
+    echo "Origin has more recent sources, running svnPull.sh"
+    echo "if it goes smooth, please retry svnPush.sh"
+    svnPull.sh
   else
     echo "git push failed for unknown reason"
     echo "$response"
