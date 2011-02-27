@@ -59,9 +59,9 @@ if [ -n "$svnChanges" -o -n "$gitChanges" ] ; then
     # ---> Ask Git commiters to put theit name in commit message
     git-svn dcommit --username=piotrp
   fi
-  # Continue accepting pushes
-  git config receive.denyCurrentBranch "ignore"
   echo "`date +"%F %k:%M:%S"` Synchronization ended"
 else
   echo "`date +"%F %k:%M:%S"` Nothing to synchronize"
 fi
+# Continue accepting pushes
+git config receive.denyCurrentBranch "ignore"
