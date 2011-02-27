@@ -37,10 +37,10 @@ log(){
 
 svnSynch(){
   #giving nice name to function parameters
-  localBranchName=$1
-  svnBranchName=$2
+  localBranchName="$1"
+  svnBranchName="$2"
   # checkout local branch
-  git checkout $localBranchName > /dev/null 2>$1
+  git checkout "$localBranchName" > /dev/null 2>&1
   # Fetch most recent SVN changes first
   git-svn fetch
 
@@ -54,7 +54,7 @@ svnSynch(){
     # Wait for any pending pushes to finish
     sleep 30
     # Required on non bare repositories that allows pushing changes
-    git reset --hard > /dev/null 2>$1
+    git reset --hard > /dev/null 2>&1
     # Put git changes on top of SVN recent changes
     git-svn rebase || {
       log "standard rebase failed, aborting and retrying"
