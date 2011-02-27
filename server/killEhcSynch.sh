@@ -1,0 +1,1 @@
+kill `cat /opt/portal/git/bin/EHC.pid`
