@@ -54,7 +54,7 @@ svnSynch(){
     # Wait for any pending pushes to finish
     sleep 30
     # Required on non bare repositories that allows pushing changes
-    git reset --hard
+    git reset --hard > /dev/null 2>$1
     # Put git changes on top of SVN recent changes
     git-svn rebase || {
       log "standard rebase failed, aborting and retrying"
